@@ -1,0 +1,39 @@
+
+#showcase-editor {
+	
+	.se-workspace {
+		align-items: stretch;
+		border: 1px solid green;
+		border-width: 1px 0;
+		display: flex;
+		margin: 1em 0;
+
+		.se-canvas {
+			background-color: white;
+			flex: 1;
+		}
+
+		.se-panels {
+			background-color: #666;
+			color: #eee;
+		}
+	}
+
+	.se-canvas {
+		min-height: 600px;
+		position: relative;
+
+		.se-cell {
+			border: 1px dotted teal;
+			position: absolute;
+		}
+	}
+	.se-console {
+		background-color: #283239;
+		min-height: 200px;
+
+		pre {
+			color: #eee;
+		}
+	}
+}
