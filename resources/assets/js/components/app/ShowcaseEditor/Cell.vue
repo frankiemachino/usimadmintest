@@ -1,23 +1,32 @@
 <template>
-	<div class="se-cell" :style="style">
-		Cell.
-
-<!-- 		{{ cell.position.x }}
-		{{ cell.position.y }}
-
-		{{ cell.size.width }}
-		{{ cell.size.height }}
- -->
+	<div class="se-cell" @click="didClick" :style="style">
+		<div class="se-cell-content" v-for="content in cell.content" :style="resolveContentStyle(content)">
+			<!-- <img v-if="content.type == 'image'" :src="content.image.url" /> -->
+			<img v-if="content.type == 'product'" :src="content.product.image.url" />
+		</div>
 	</div>
 </template>
 <script>
 export default {
-	props: ['cell', 'canvas'],
-	computed: {
-		test: function() {
-			console.log("TEST :: ");
-			console.log(this.canvas.unit);
+	props: ['cell', 'canvas', 'index'],
+	methods: {
+		didClick: function() {
+			this.$emit('didClickCell', this.index)
 		},
+		resolveContentStyle(content) {
+
+			if(false) {
+				return {
+					left: content.position.x + 'px',
+					top: content.position.y + 'px',
+					width: content.size.width + 'px',
+					height: content.size.height + 'px'
+				}
+			}
+			return {}
+		}
+	},
+	computed: {
 		style: function() {
 			return {
 				left: this.cell.position.x * this.canvas.unit + 'px',

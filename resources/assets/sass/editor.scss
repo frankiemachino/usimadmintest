@@ -16,6 +16,15 @@
 		.se-panels {
 			background-color: #666;
 			color: #eee;
+			flex-wrap: wrap;
+			max-width: 300px;
+
+			.se-panel {
+				header {
+					padding: 1em;
+					border-bottom: 1px solid #eee;
+				}
+			}
 		}
 	}
 
@@ -26,6 +35,10 @@
 		.se-cell {
 			border: 1px dotted teal;
 			position: absolute;
+
+			.se-cell-content {
+				position: absolute;
+			}
 		}
 	}
 	.se-console {

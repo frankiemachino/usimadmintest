@@ -49717,14 +49717,34 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 Vue.component('se-toolbar', __webpack_require__(109));
+
+Vue.component('se-tool-selector', __webpack_require__(120));
+
 Vue.component('se-canvas', __webpack_require__(107));
 Vue.component('se-panels', __webpack_require__(118));
 Vue.component('se-console', __webpack_require__(111));
-
 Vue.component('se-cell', __webpack_require__(115));
+
+var selectorTool = {
+	name: "Selector",
+	didClickCell: function didClickCell() {
+		console.log('didClickCell');
+	},
+	didClickCanvas: function didClickCanvas() {
+		console.log('didClickCanvas');
+	}
+};
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	mounted: function mounted() {
@@ -49735,7 +49755,9 @@ Vue.component('se-cell', __webpack_require__(115));
 	data: function data() {
 		return {
 			showcase: null,
-			isLoading: false
+			isLoading: false,
+			currentTool: selectorTool,
+			cellId: null
 		};
 	},
 	methods: {
@@ -49750,6 +49772,32 @@ Vue.component('se-cell', __webpack_require__(115));
 			}).catch(function (e) {
 				_this.errors.push(e);
 			});
+		},
+
+
+		didClickCell: function didClickCell(cell) {
+			this.currentTool.didClickCell(cell);
+			this.selectCell(cell);
+		},
+		didClickCanvas: function didClickCanvas() {
+
+			this.currentTool.didClickCanvas();
+			// console.log('didClickCanvas')
+			//console.log("current tool is " + this.currentTool.name );
+		},
+		selectCell: function selectCell(cell) {
+			console.log(cell);
+			this.cellId = cell;
+		},
+		cells: function cells() {
+			return this.showcase.layout.cells || [];
+		},
+		cell: function cell() {
+			if (this.showcase) {
+				return this.showcase.layout.cells[this.cellId];
+			}
+
+			return {};
 		}
 	}
 });
@@ -49766,17 +49814,25 @@ var render = function() {
     "div",
     { attrs: { id: "showcase-editor" } },
     [
-      _c("se-toolbar"),
+      _c("se-toolbar", [_c("se-tool-selector")], 1),
       _vm._v(" "),
       _c(
         "div",
         { staticClass: "se-workspace" },
         [
           _vm.showcase
-            ? _c("se-canvas", { attrs: { layout: _vm.showcase.layout } })
+            ? _c("se-canvas", {
+                attrs: { layout: _vm.showcase.layout },
+                on: {
+                  didClickCell: _vm.didClickCell,
+                  didClickCanvas: _vm.didClickCanvas
+                }
+              })
             : _vm._e(),
           _vm._v(" "),
-          _c("se-panels")
+          _c("se-panels", {
+            attrs: { currentCell: _vm.cell(), cells: _vm.cells }
+          })
         ],
         1
       ),
@@ -49854,13 +49910,18 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "se-canvas" },
+    {
+      staticClass: "se-canvas",
+      style: _vm.style(),
+      on: { click: _vm.didClickCanvas }
+    },
     [
       _vm._v("\n\tCanvas.\n\n\t"),
-      _vm._l(_vm.layout.cells, function(cell) {
+      _vm._l(_vm.layout.cells, function(cell, index) {
         return _c("se-cell", {
-          key: "cell.id",
-          attrs: { cell: cell, canvas: _vm.canvas }
+          key: index,
+          attrs: { canvas: _vm.canvas, cell: cell, index: index },
+          on: { didClickCell: _vm.didClickCell }
         })
       })
     ],
@@ -49933,56 +49994,21 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container-fluid" }, [
-      _c("div", { staticClass: "btn-toolbar" }, [
-        _c(
-          "div",
-          {
-            staticClass: "btn-group",
-            attrs: { role: "group", "aria-label": "First group" }
-          },
-          [
-            _c(
-              "button",
-              { staticClass: "btn btn-secondary", attrs: { type: "button" } },
-              [
-                _c("i", {
-                  staticClass: "fa fa-mouse-pointer fa-fw",
-                  attrs: { "aria-hidden": "true" }
-                })
-              ]
-            ),
-            _vm._v(" "),
-            _c(
-              "button",
-              { staticClass: "btn btn-secondary", attrs: { type: "button" } },
-              [_vm._v("2")]
-            ),
-            _vm._v(" "),
-            _c(
-              "button",
-              { staticClass: "btn btn-secondary", attrs: { type: "button" } },
-              [_vm._v("3")]
-            ),
-            _vm._v(" "),
-            _c(
-              "button",
-              { staticClass: "btn btn-secondary", attrs: { type: "button" } },
-              [_vm._v("4")]
-            )
-          ]
-        )
-      ])
+  return _c("div", { staticClass: "container-fluid" }, [
+    _c("div", { staticClass: "btn-toolbar" }, [
+      _c(
+        "div",
+        {
+          staticClass: "btn-group",
+          attrs: { role: "group", "aria-label": "First group" }
+        },
+        [_vm._t("default")],
+        2
+      )
     ])
-  }
-]
+  ])
+}
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -50100,6 +50126,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -50114,6 +50143,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 	props: ['layout'],
 	data: function data() {
 		return {
+			height: 0,
 			canvas: {
 				unit: null
 			}
@@ -50129,10 +50159,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 
 		unit: function unit() {
-			console.log("UNIT");
 			return this.$el.offsetWidth / 6;
 		},
+
 		setCanvasHeight: function setCanvasHeight() {
+			var max = 0;
+			var bottom;
 			var _iteratorNormalCompletion = true;
 			var _didIteratorError = false;
 			var _iteratorError = undefined;
@@ -50141,7 +50173,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				for (var _iterator = this.layout.cells[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 					var cell = _step.value;
 
-					console.log(cell.size.height);
+					bottom = cell.size.height + cell.position.y;
+					if (bottom > max) {
+						max = bottom;
+					}
 				}
 			} catch (err) {
 				_didIteratorError = true;
@@ -50158,7 +50193,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				}
 			}
 
-			console.log('setting canvas height...');
+			var height = max * this.unit();
+			this.height = height;
+		},
+
+		style: function style() {
+			return {
+				height: this.height + 'px'
+			};
+		},
+
+		didClickCell: function didClickCell(cell) {
+			this.$emit('didClickCell', cell);
+		},
+		didClickCanvas: function didClickCanvas() {
+			this.$emit('didClickCanvas');
 		}
 	}
 });
@@ -50219,9 +50268,24 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "se-cell", style: _vm.style }, [
-    _vm._v("\n\t\tCell.\n\n")
-  ])
+  return _c(
+    "div",
+    { staticClass: "se-cell", style: _vm.style, on: { click: _vm.didClick } },
+    _vm._l(_vm.cell.content, function(content) {
+      return _c(
+        "div",
+        {
+          staticClass: "se-cell-content",
+          style: _vm.resolveContentStyle(content)
+        },
+        [
+          content.type == "product"
+            ? _c("img", { attrs: { src: content.product.image.url } })
+            : _vm._e()
+        ]
+      )
+    })
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -50247,18 +50311,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	props: ['cell', 'canvas'],
-	computed: {
-		test: function test() {
-			console.log("TEST :: ");
-			console.log(this.canvas.unit);
+	props: ['cell', 'canvas', 'index'],
+	methods: {
+		didClick: function didClick() {
+			this.$emit('didClickCell', this.index);
 		},
+		resolveContentStyle: function resolveContentStyle(content) {
+
+			if (false) {
+				return {
+					left: content.position.x + 'px',
+					top: content.position.y + 'px',
+					width: content.size.width + 'px',
+					height: content.size.height + 'px'
+				};
+			}
+			return {};
+		}
+	},
+	computed: {
 		style: function style() {
 			return {
 				left: this.cell.position.x * this.canvas.unit + 'px',
@@ -50277,7 +50350,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 var disposed = false
 var normalizeComponent = __webpack_require__(1)
 /* script */
-var __vue_script__ = null
+var __vue_script__ = __webpack_require__(123)
 /* template */
 var __vue_template__ = __webpack_require__(119)
 /* template functional */
@@ -50326,9 +50399,198 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "se-panels" }, [_vm._v("\n\tPanels.\n")])
+  return _c("div", { staticClass: "se-panels" }, [
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { staticClass: "se-panel" }, [
+      _c("header", [_vm._v("Info")]),
+      _vm._v(" "),
+      _vm.currentCell
+        ? _c("div", [
+            _vm.cellData.position
+              ? _c("div", [
+                  _c("h5", [_vm._v("Position")]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", [_vm._v("X")]),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.cellData.position.x,
+                          expression: "cellData.position.x"
+                        }
+                      ],
+                      attrs: { disabled: "" },
+                      domProps: { value: _vm.cellData.position.x },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.cellData.position,
+                            "x",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", [_vm._v("Y")]),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.cellData.position.y,
+                          expression: "cellData.position.y"
+                        }
+                      ],
+                      attrs: { disabled: "" },
+                      domProps: { value: _vm.cellData.position.y },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.cellData.position,
+                            "y",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ])
+                ])
+              : _vm._e(),
+            _vm._v(" "),
+            _vm.cellData.size
+              ? _c("div", [
+                  _c("h5", [_vm._v("Size")]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", [_vm._v("Width")]),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.cellData.size.width,
+                          expression: "cellData.size.width"
+                        }
+                      ],
+                      attrs: { disabled: "" },
+                      domProps: { value: _vm.cellData.size.width },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.cellData.size,
+                            "width",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", [_vm._v("Height")]),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.cellData.size.height,
+                          expression: "cellData.size.height"
+                        }
+                      ],
+                      attrs: { disabled: "" },
+                      domProps: { value: _vm.cellData.size.height },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(
+                            _vm.cellData.size,
+                            "height",
+                            $event.target.value
+                          )
+                        }
+                      }
+                    })
+                  ])
+                ])
+              : _vm._e()
+          ])
+        : _vm._e()
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "se-panel" }, [
+      _c("header", [_vm._v("Content")]),
+      _vm._v(" "),
+      _vm.cellData.content
+        ? _c("div", [
+            _c(
+              "div",
+              _vm._l(_vm.cellData.content, function(content) {
+                return _c("div", [
+                  _c("div", { staticClass: "form-group" }, [
+                    _c("label", [_vm._v("Type")]),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: content.type,
+                          expression: "content.type"
+                        }
+                      ],
+                      attrs: { disabled: "" },
+                      domProps: { value: content.type },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.$set(content, "type", $event.target.value)
+                        }
+                      }
+                    })
+                  ])
+                ])
+              })
+            )
+          ])
+        : _vm._e()
+    ])
+  ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "se-panel" }, [
+      _c("header", [_vm._v("Info")]),
+      _vm._v(" "),
+      _c("div", [_vm._v("Cells panel...")])
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -50337,6 +50599,176 @@ if (false) {
     require("vue-hot-reload-api")      .rerender("data-v-91c6ae5e", module.exports)
   }
 }
+
+/***/ }),
+/* 120 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(122)
+/* template */
+var __vue_template__ = __webpack_require__(121)
+/* template functional */
+  var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/app/ShowcaseEditor/Tools/Selector.vue"
+if (Component.esModule && Object.keys(Component.esModule).some(function (key) {  return key !== "default" && key.substr(0, 2) !== "__"})) {  console.error("named exports are not supported in *.vue files.")}
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-016048d6", Component.options)
+  } else {
+    hotAPI.reload("data-v-016048d6", Component.options)
+' + '  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 121 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm._m(0)
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      { staticClass: "btn btn-secondary", attrs: { type: "button" } },
+      [
+        _c("i", {
+          staticClass: "fa fa-mouse-pointer fa-fw",
+          attrs: { "aria-hidden": "true" }
+        })
+      ]
+    )
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-016048d6", module.exports)
+  }
+}
+
+/***/ }),
+/* 122 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({});
+
+/***/ }),
+/* 123 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	props: ['currentCell', 'cells'],
+	computed: {
+		cellData: function cellData() {
+			return Object.assign({}, this.currentCell);
+		}
+	}
+
+	// <div>x: {{ currentCell.position.x }}</div>
+	// 				<div>y: {{ currentCell.position.y }}</div>
+	// 				<div>width: {{ currentCell.size.width }}</div>
+	// 				<div>height: {{ currentCell.size.height }}</div>
+
+});
 
 /***/ })
 /******/ ]);

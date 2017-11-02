@@ -12868,6 +12868,14 @@ body {
 #showcase-editor .se-workspace .se-panels {
   background-color: #666;
   color: #eee;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  max-width: 300px;
+}
+
+#showcase-editor .se-workspace .se-panels .se-panel header {
+  padding: 1em;
+  border-bottom: 1px solid #eee;
 }
 
 #showcase-editor .se-canvas {
@@ -12877,6 +12885,10 @@ body {
 
 #showcase-editor .se-canvas .se-cell {
   border: 1px dotted teal;
+  position: absolute;
+}
+
+#showcase-editor .se-canvas .se-cell .se-cell-content {
   position: absolute;
 }
 

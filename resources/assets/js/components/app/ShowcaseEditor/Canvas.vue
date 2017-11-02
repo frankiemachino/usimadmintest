@@ -1,10 +1,13 @@
 <template>
-	<div class="se-canvas">
+	<div class="se-canvas" @click="didClickCanvas" :style="style()">
 		Canvas.
 
-		<se-cell v-for="cell in layout.cells" key="cell.id"
-			:cell="cell"
+		<se-cell v-for="(cell, index) in layout.cells"
 			:canvas="canvas"
+			:cell="cell"
+			:index="index"
+			:key="index"
+			@didClickCell="didClickCell"
 		></se-cell>
 	</div>
 </template>
@@ -21,6 +24,7 @@ export default {
 	props: ['layout'],
 	data: function() {
 		return {
+			height: 0,
 			canvas: {
 				unit: null
 			}
@@ -36,14 +40,34 @@ export default {
 
 		},
 		unit: function() {
-			console.log("UNIT");
 			return this.$el.offsetWidth / 6
 		},
+
 		setCanvasHeight: function() {
+			var max = 0;
+			var bottom;
 			for (let cell of this.layout.cells) {
-				console.log(cell.size.height)
+				bottom = cell.size.height + cell.position.y
+				if(bottom > max) {
+					max = bottom
+				}
 			}
-			console.log('setting canvas height...');
+
+			var height = max * this.unit()
+			this.height = height
+		},
+
+		style: function() {
+			return {
+				height: this.height + 'px'
+			}
+		},
+
+		didClickCell: function(cell) {
+			this.$emit('didClickCell', cell)
+		},
+		didClickCanvas: function() {
+			this.$emit('didClickCanvas')
 		}
 	}
 }
