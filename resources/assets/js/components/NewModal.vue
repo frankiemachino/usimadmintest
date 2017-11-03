@@ -1,5 +1,5 @@
 <template>
-	
+
 <div class="modal fade" :id="id" tabindex="-1" role="dialog" aria-hidden="true">
 	<div v-if="isLoading">
 		<div class="modal-dialog" role="document">

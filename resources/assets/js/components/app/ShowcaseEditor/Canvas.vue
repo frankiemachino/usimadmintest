@@ -1,19 +1,28 @@
 <template>
-	<div class="se-canvas" @click="didClickCanvas" :style="style()">
+	<div class="se-canvas"
+		@click="didClickCanvas"
+		:style="style()"
+		v-resize="handleResize"
+		>
 		Canvas.
-
 		<se-cell v-for="(cell, index) in layout.cells"
 			:canvas="canvas"
 			:cell="cell"
 			:index="index"
 			:key="index"
+			:isSelected="isSelected(index)"
 			@didClickCell="didClickCell"
 		></se-cell>
 	</div>
 </template>
 <script>
 
+import resize from 'vue-resize-directive'
+
 export default {
+	directives: {
+	    resize,
+	},
 	mounted() {
 		window.addEventListener('resize', this.handleResize)
 		this.handleResize();
@@ -21,7 +30,7 @@ export default {
 	beforeDestroy: function () {
 		window.removeEventListener('resize', this.handleResize)
 	},
-	props: ['layout'],
+	props: ['layout', 'selected'],
 	data: function() {
 		return {
 			height: 0,
@@ -68,6 +77,9 @@ export default {
 		},
 		didClickCanvas: function() {
 			this.$emit('didClickCanvas')
+		},
+		isSelected: function(index) {
+			return this.selected.includes(index)
 		}
 	}
 }

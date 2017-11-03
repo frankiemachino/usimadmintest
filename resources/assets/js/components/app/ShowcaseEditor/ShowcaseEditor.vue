@@ -5,12 +5,14 @@
 		</se-toolbar>
 		<div class="se-workspace">
 			<se-canvas v-if="showcase" :layout="showcase.layout"
+				:selected="selected"
 				@didClickCell="didClickCell"
 				@didClickCanvas="didClickCanvas"
 			></se-canvas>
 			<se-panels
 				:currentCell="cell()"
 				:cells="cells"
+				@didPressNewProduct="didClickNewProductButton"
 			></se-panels>
 		</div>
 		<se-console :json="showcase"></se-console>
@@ -27,7 +29,7 @@ Vue.component('se-panels', require('./Panels.vue'));
 Vue.component('se-console', require('./Console.vue'));
 Vue.component('se-cell', require('./Cell.vue'));
 
-
+Vue.component('se-product-browser-modal', require('./Modals/ProductBrowserModal.vue'));
 
 var selectorTool = {
 	name: "Selector",
@@ -49,7 +51,8 @@ export default {
 			showcase: null,
 			isLoading: false,
 			currentTool: selectorTool,
-			cellId: null
+			cellId: null,
+			selected: []
 		}
 	},
 	methods: {
@@ -76,8 +79,12 @@ export default {
 			// console.log('didClickCanvas')
 			//console.log("current tool is " + this.currentTool.name );
 		},
+		didClickNewProductButton: function() {
+			//
+		},
 		selectCell: function(cell) {
-			console.log(cell)
+			this.selected = []
+			this.selected.push(cell)
 			this.cellId = cell
 		},
 		cells: function() {
@@ -89,6 +96,18 @@ export default {
 			}
 
 			return {}
+		},
+		fetchProduct(id) {
+			axios.get(`http://api.usim.dev/v1/product/`+ id)
+				.then(response => {
+					
+					this.results = response.data
+				})
+				.catch(e => {
+					this.errors.push(e)
+				})
+		},
+		fetchImage() {
 		}
 	}
 }

@@ -33,13 +33,14 @@
 		</div>
 		<div class="se-panel">
 			<header>Content</header>
-			<div v-if="cellData.content">
-				<div>
-					<div v-for="content in cellData.content">
-						<div class="form-group">
-							<label>Type</label>
-							<input v-model="content.type" disabled />
-						</div>
+			<div class="se-panel-body" v-if="cellData.content">
+				<div v-for="content in cellData.content">
+					<div class="form-group">
+						<label>Type</label>
+						<input v-model="content.type" class="form-control" disabled />
+					</div>
+					<div v-if="content.type == 'product'">
+						<ui-button modal="product-browser-modal" styling="primary">Product Browser</ui-button>
 					</div>
 				</div>
 			</div>
@@ -50,16 +51,15 @@
 
 export default {
 	props: ['currentCell', 'cells'],
+	methods: {
+		didPressNewProduct() {
+			this.$emit('didPressNewProduct')
+		}
+	},
 	computed: {
 		cellData: function() {
 			return Object.assign({}, this.currentCell)
 		}
 	}
 }
-
-// <div>x: {{ currentCell.position.x }}</div>
-// 				<div>y: {{ currentCell.position.y }}</div>
-// 				<div>width: {{ currentCell.size.width }}</div>
-// 				<div>height: {{ currentCell.size.height }}</div>
-
 </script>

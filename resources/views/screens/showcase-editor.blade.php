@@ -6,3 +6,4 @@
 	<usim-showcase-editor
 		:showcase-id="{{ $showcaseId }}"
 	></usim-showcase-editor>
+	<se-product-browser-modal></se-product-browser-modal>

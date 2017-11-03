@@ -1,20 +1,33 @@
 <template>
-	<div class="se-cell" @click="didClick" :style="style">
+	<div class="se-cell" 
+		@click="didClick"
+		:style="style"
+		:class="{
+			'se-cell-selected': isSelected
+		}"
+
+		>
 		<div class="se-cell-content" v-for="content in cell.content" :style="resolveContentStyle(content)">
-			<!-- <img v-if="content.type == 'image'" :src="content.image.url" /> -->
-			<img v-if="content.type == 'product'" :src="content.product.image.url" />
+			<img
+				v-if="content.type == 'product'"
+				:src="'/img/' + content.product.image.url"
+			/>
+
+			<img
+				v-if="content.type == 'image'"
+				:src="'/img/' + content.image.url"
+			/>
 		</div>
 	</div>
 </template>
 <script>
 export default {
-	props: ['cell', 'canvas', 'index'],
+	props: ['cell', 'canvas', 'index', 'isSelected'],
 	methods: {
 		didClick: function() {
 			this.$emit('didClickCell', this.index)
 		},
 		resolveContentStyle(content) {
-
 			if(false) {
 				return {
 					left: content.position.x + 'px',
