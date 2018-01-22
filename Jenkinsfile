@@ -3,7 +3,13 @@ pipeline {
   stages {
     stage('shell screeeeeee') {
       steps {
-        sh '''name=$JOB_NAME
+        sh '''touch storage/logs/laravel.log
+
+sudo chown -R jenkins:www-data storage/ bootstrap/
+
+composer install
+
+name=$JOB_NAME
 
 name2=${name%/*}
 
@@ -32,6 +38,14 @@ sudo echo "<VirtualHost *:80>
 sudo a2ensite $name2.conf
 
 sudo service apache2 reload
+
+sudo mv .env.example .env
+
+php artisan key:generate
+
+
+
+
 '''
       }
     }
